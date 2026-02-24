@@ -1,8 +1,47 @@
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Sparkles, ChevronRight, Globe, Users, ScrollText, Heart, Wine } from 'lucide-react';
 
+// Culturally specific high-quality imagery
+const CULTURAL_IMAGES = [
+  {
+    id: 'western',
+    url: 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1000&auto=format&fit=crop',
+    alt: 'Classic Western Elegance',
+    label: 'Classic Elegance'
+  },
+  {
+    id: 'north-indian',
+    url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1000&auto=format&fit=crop',
+    alt: 'North Indian Royal Wedding',
+    label: 'North Indian Royal'
+  },
+  {
+    id: 'south-indian',
+    url: 'https://images.unsplash.com/photo-1610173827002-62c0f1f05b04?q=80&w=1000&auto=format&fit=crop',
+    alt: 'South Indian Kanjeevaram',
+    label: 'South Indian Traditional'
+  },
+  {
+    id: 'sri-lankan',
+    url: 'https://images.unsplash.com/photo-1544078755-9ee2969b820a?q=80&w=1000&auto=format&fit=crop',
+    alt: 'Sri Lankan Tropical/Heritage',
+    label: 'Sri Lankan Heritage'
+  }
+];
+
 export default function LandingPage() {
+  const [currentImgIndex, setCurrentImgIndex] = useState(0);
+
+  // Auto-cycle through the cultural images every 4 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImgIndex((prev) => (prev + 1) % CULTURAL_IMAGES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-stone-900 font-sans overflow-hidden">
       
@@ -47,27 +86,49 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* Hero Visuals (Overlapping Global Cards) */}
+          {/* Hero Visuals (Auto-Fading Cultural Image Carousel) */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative h-[500px] lg:h-[600px] hidden md:block"
           >
-            {/* Main Background Image - Elegant Western/Neutral Wedding */}
-            <div className="absolute right-0 top-0 w-4/5 h-4/5 rounded-t-full rounded-b-2xl overflow-hidden shadow-2xl border-4 border-white">
-              <img 
-                src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=1000&auto=format&fit=crop" 
-                alt="Elegant Wedding Decor" 
-                className="w-full h-full object-cover"
-              />
+            {/* Dynamic Image Container */}
+            <div className="absolute right-0 top-0 w-4/5 h-4/5 rounded-t-full rounded-b-2xl overflow-hidden shadow-2xl border-4 border-white bg-stone-100 relative">
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={currentImgIndex}
+                  src={CULTURAL_IMAGES[currentImgIndex].url}
+                  alt={CULTURAL_IMAGES[currentImgIndex].alt}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.5, ease: "easeInOut" }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </AnimatePresence>
+              
+              {/* Dynamic Theme Label Overlay */}
+              <div className="absolute bottom-4 left-0 right-0 flex justify-center z-10">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentImgIndex}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg text-xs font-bold tracking-wide text-stone-800 uppercase"
+                  >
+                    {CULTURAL_IMAGES[currentImgIndex].label}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
             </div>
             
             {/* Floating UI Card 1: Western Event Weekend */}
             <motion.div 
               animate={{ y: [-10, 10, -10] }}
               transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-              className="absolute left-0 top-1/4 bg-white p-5 rounded-xl shadow-2xl border border-stone-100 max-w-xs"
+              className="absolute left-0 top-1/4 bg-white p-5 rounded-xl shadow-2xl border border-stone-100 max-w-xs z-20"
             >
               <div className="flex items-center justify-between mb-3 border-b border-stone-100 pb-2">
                 <span className="text-xs font-bold tracking-widest text-stone-500 uppercase">Welcome Drinks</span>
@@ -80,8 +141,8 @@ export default function LandingPage() {
             {/* Floating UI Card 2: South Asian RSVP */}
             <motion.div 
               animate={{ y: [10, -10, 10] }}
-              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="absolute right-10 -bottom-10 bg-[#FEFAE0] p-6 rounded-xl shadow-2xl border border-[#E8A020] max-w-xs w-full"
+              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut", delay: 1 }}
+              className="absolute right-10 -bottom-10 bg-[#FEFAE0] p-6 rounded-xl shadow-2xl border border-[#E8A020] max-w-xs w-full z-20"
             >
                <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-[#C0392B]/10 flex items-center justify-center">
@@ -100,7 +161,7 @@ export default function LandingPage() {
       </section>
 
       {/* The Global Themes Section (4 Grid) */}
-      <section className="bg-white py-24 px-6 border-t border-stone-200 relative">
+      <section className="bg-white py-24 px-6 border-t border-stone-200 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <h3 className="font-playfair text-4xl font-bold mb-4">Aesthetic themes for every culture.</h3>
@@ -169,8 +230,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Feature Section (Household & Itinerary) */}
-      <section className="bg-stone-900 text-stone-50 py-24 px-6">
+      {/* Feature Section (Household & Itinerary) - Kept same as previous */}
+      <section className="bg-stone-900 text-stone-50 py-24 px-6 relative z-10">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div>
             <h3 className="font-playfair text-4xl font-bold mb-6">Built for complex wedding weekends.</h3>
