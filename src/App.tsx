@@ -9,6 +9,7 @@ import LoginPage from './pages/auth/LoginPage';
 import AuthCallback from './pages/auth/AuthCallback';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
+import InvitationsPage from './pages/InvitationsPage'; // <-- Added Import
 
 export default function App() {
   return (
@@ -17,6 +18,9 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        
+        {/* Public Gallery Route */}
+        <Route path="/invitations" element={<InvitationsPage />} /> {/* <-- Added Route */}
         
         {/* Public Invite Route */}
         <Route path="/invite/:slug" element={<InvitePage />} />
